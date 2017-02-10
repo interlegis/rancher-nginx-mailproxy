@@ -39,12 +39,12 @@ if ($protocol=="smtp") {
 
 // Authenticate the user or fail
 if (!authuser($username,$userpass)){
-  fail($username, $userip, $protocol);
+  fail($username, $userip, $protocol, $server);
   exit;
 }
-
+$serverip=gethostbyname($server)
 // Pass!
-pass($server, $backend_port, $username, $userip, $protocol);
+pass($serverip, $backend_port, $username, $userip, $protocol);
 
 //END
 
@@ -53,7 +53,7 @@ function authuser($user,$pass){
   // add /ssl/novalidate-cert after the protocol specification:
 
   $userserver=getmailserver($user);
-  $mbox = imap_open ('{'.$userserver.':993/imap/ssl/novalidate-cert}', $user, $pass );
+  $mbox = imap_open ('{'.$userserver.':143/imap}', $user, $pass );
 
   if ($mbox) {
     imap_close($mbox);
@@ -66,13 +66,13 @@ function authuser($user,$pass){
 function getmailserver($user){
 
   $userdomain=substr(strrchr($user, "@"), 1);
-  $server=($userdomain."rancher.internal");
+  $server=("imap.".str_replace(".","-",$userdomain).".rancher.internal");
  
   return $server;
 }
 
-function fail($username, $userip, $protocol){
-  flog("Auth ".strtoupper($protocol)." FAIL: ".$username." IP: ". $userip);
+function fail($username, $userip, $protocol, $server){
+  flog("Auth ".strtoupper($protocol)." FAIL: ".$username." IP: ". $userip." Server: ".$server);
   header("Auth-Status: Invalid login or password");
   exit;
 }
