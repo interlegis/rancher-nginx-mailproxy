@@ -18,33 +18,37 @@ $userip=$_SERVER["HTTP_CLIENT_IP"];
 
 // default backend port
 $backend_port=110;
-$server=null;
-
-if ($protocol=="imap") {
-  $backend_port=143;
-  $server=getmailserver($username);
-}
-
-if ($protocol=="smtp") {
-  $backend_port=25;
-  $relay_host = getenv("RELAY_HOST");
-  if ($relay_host != '') {
-    // Send email via relay host
-    $server=getenv("RELAY_HOST");
-  } else {
-    // Send email through default mail server
-    $server=getmailserver($username);
-  }
-}
+$server=getmailserver($username);
+$relay_host = getenv("RELAY_HOST");
 
 // Authenticate the user or fail
 if (!authuser($username,$userpass)){
   fail($username, $userip, $protocol, $server);
   exit;
 }
-$serverip=gethostbyname($server);
-// Pass!
-pass($serverip, $backend_port, $username, $userip, $protocol);
+
+if ($protocol=="imap") {
+  $backend_port=143;
+  $serverip=gethostbyname($server);
+  // Pass!
+  pass($serverip, $backend_port, $username, $userip, $protocol);
+}
+
+if ($protocol=="smtp") {
+  $backend_port=25;
+  if ($relay_host != '') {
+    // Send email via relay host
+    $serverip=gethostbyname(getenv("RELAY_HOST"));
+  } else {
+    // Send email through default mail server
+    $userdomain=substr(strrchr($user, "@"), 1);
+    $server=("smtp.".str_replace(".","-",$userdomain).".rancher.internal");
+    $serverip=gethostbyname($server);
+  }
+  // Pass!
+  pass($serverip, $backend_port, $username, $userip, $protocol);
+}
+
 
 //END
 
