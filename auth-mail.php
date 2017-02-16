@@ -49,7 +49,6 @@ if ($protocol=="smtp") {
   pass($serverip, $backend_port, $username, $userip, $protocol);
 }
 
-
 //END
 
 function authuser($user,$pass){
