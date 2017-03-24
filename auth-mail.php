@@ -56,7 +56,7 @@ function authuser($user,$pass){
   // add /ssl/novalidate-cert after the protocol specification:
 
   $userserver=getmailserver($user);
-  $mbox = imap_open ('{'.$userserver.':143/imap}', $user, $pass );
+  $mbox = imap_open ('{'.$userserver.':143/imap/notls}', $user, $pass );
 
   if ($mbox) {
     imap_close($mbox);
