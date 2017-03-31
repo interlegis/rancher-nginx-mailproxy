@@ -52,9 +52,15 @@ if ($protocol=="smtp") {
 //END
 
 function authuser($user,$pass){
+  // password characters encoded by nginx:
+  // " " 0x20h (SPACE)
+  // "%" 0x25h
+  // see nginx source: src/core/ngx_string.c:ngx_escape_uri(...)
+  $pass = str_replace('%20',' ', $pass);
+  $pass = str_replace('%25','%', $pass);
+
   // To connect to an SSL IMAP or POP3 server with a self-signed certificate,
   // add /ssl/novalidate-cert after the protocol specification:
-
   $userserver=getmailserver($user);
   $mbox = imap_open ('{'.$userserver.':143/imap/notls}', $user, $pass );
 
