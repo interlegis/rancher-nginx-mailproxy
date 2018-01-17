@@ -4,12 +4,11 @@ ENV INSTALL_PATH=/var/www/html \
     RELAY_HOST='' 
 
 RUN apk add --update \
-        libmcrypt-dev \
         openldap-dev \
         imap-dev \
-        openssl-dev && \
+        libressl-dev && \
     docker-php-ext-configure imap --with-imap --with-imap-ssl && \
-    docker-php-ext-install json mcrypt imap ldap && \
+    docker-php-ext-install json imap ldap && \
     rm -rf /var/cache/apk/*
 
 COPY auth-mail.php /var/www/html
