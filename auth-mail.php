@@ -34,6 +34,13 @@ if ($protocol=="imap") {
   pass($serverip, $backend_port, $username, $userip, $protocol);
 }
 
+if ($protocol=="pop3" || $protocol=="pop") {                                                          
+  $backend_port=110;                                                                                  
+  $serverip=gethostbyname($server);                                                                   
+  // Pass!                                                                                            
+  pass($serverip, $backend_port, $username, $userip, $protocol);                                      
+} 
+
 if ($protocol=="smtp") {
   $backend_port=25;
   if ($relay_host != '') {
